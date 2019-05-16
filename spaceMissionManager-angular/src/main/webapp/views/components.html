@@ -1,0 +1,77 @@
+<h1>Craft Components</h1>
+<!-- button for adding a new category -->
+<div ng-if="!edit && !create">
+
+    <button ng-click="createCC()" class="btn btn-primary" style="margin-bottom: 2.5rem;">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        New component
+    </button>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Ready to use</th>
+            <th>Ready date</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="cc in craftComponents track by $index">
+            <td>{{cc.id}}</td>
+            <td>{{cc.name}}</td>
+            <td>{{cc.readyToUse?"YES":"NO"}}</td>
+            <td>{{cc.readyDate == null ? (cc.readyToUse? "READY" : "UNKNOWN") : cc.readyDate}}</td>
+            <td>
+                <button ngDisabled="!manager" class="btn btn-primary" ng-click="editCC(cc.id)"><span
+                        class="glyphicon glyphicon-edit"></span>
+                </button>
+            </td>
+            <td>
+                <button ngDisabled="!manager" class="btn btn-danger" ng-click="delete(cc.id)"><span
+                        class="glyphicon glyphicon-remove"></span>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div ng-if="edit || create">
+    <form name="form" novalidate class="form-horizontal" (submit)="save()">
+        <div class="form-group" ng-class="{'has-error': !(form.name.$valid)}">
+            <label for="name" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+                <input placeholder="name" id="name" type="text" ng-minlength="3" ng-maxlength="50" name="name"
+                       class="form-control" ng-model="cc.name" required/>
+                <p class="help-block" ng-show="form.name.$error.required">name is required</p>
+                <p class="help-block" ng-show="form.name.$error.minlength">name must be at least 3 characters</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="readyToUse" class="col-sm-2 control-label">Ready to use</label>
+            <div class="col-sm-10">
+                <input id="readyToUse" type="checkbox" name="readyToUse" class="form-control" ng-model="cc.readyToUse"/>
+            </div>
+        </div>
+        <div class="form-group" ng-class="{'has-error': !(form.readyDate.$valid || cc.readyToUse)}">
+            <label for="readyDate" class="col-sm-2 control-label">Ready date</label>
+            <div class="col-sm-10">
+                <input id="readyDate" name="readyDate" min="{{date}}" type="datetime-local" class="form-control"
+                       ng-model="cc.readyDate" ng-disabled="cc.readyToUse" ng-required="!cc.readyToUse"/>
+                <p class="help-block" ng-show="form.birthDate.$error.date">It's not date</p>
+            </div>
+        </div>
+        <!-- show disabled button if form is not valid -->
+        <button ng-disabled="!form.$valid" class="btn btn-primary" type="submit" ng-click="save()">Save craft
+            component
+        </button>
+
+        <button class="btn btn-danger" type="button" ng-click="cancel()">Cancel
+        </button>
+    </form>
+
+
+</div>

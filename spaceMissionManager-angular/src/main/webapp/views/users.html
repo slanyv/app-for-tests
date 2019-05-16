@@ -1,0 +1,118 @@
+<h1 ng-if="isProfileEdit">My profile</h1>
+<div ng-if="!edit && !create">
+
+    <button class="btn btn-primary" ng-click="createUser()" style="margin-bottom: 2.5rem"><span class="glyphicon glyphicon-plus"></span>
+        New user
+    </button>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Experience level</th>
+            <th>Accepted Mission</th>
+            <th>Manager</th>
+            <th></th>
+            <th></th>
+
+        </tr>
+        </thead>
+        <tr ng-repeat="user in users">
+            <td>{{user.name}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.experienceLevel}}</td>
+            <td>{{user.acceptedMission ? 'Yes' : 'No'}}</td>
+            <td>{{user.manager ? 'Yes' : 'No'}}</td>
+            <td>
+                <button class="btn btn-primary" ng-click="editUser(user.id)"><span
+                        class="glyphicon glyphicon-edit"></span>
+                </button>
+            </td>
+            <td ng-if="user.mission">
+                <button class="btn btn-danger disabled" data-toggle="tooltip" data-placement="left"
+                        title="This user can't be deleted. He is in mission."><span
+                        class="glyphicon glyphicon-remove"></span></button>
+            </td>
+            <td ng-if="!user.mission">
+                <button ng-click="deleteUser(user.id)" class="btn btn-danger"><span
+                        class="glyphicon glyphicon-remove"></span></button>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+<div ng-if="edit || create">
+    <h2 ng-if="!isProfileEdit">Edit user {{editedUser.name}}</h2>
+
+    <form name="form" novalidate class="form-horizontal" (submit)="edit?submitEdit():submitCreate()">
+        <div class="form-group" ng-class="{'has-error': !(form.name.$valid)}">
+            <label for="name" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+                <input placeholder="name" id="name" type="text" ng-minlength="3" name="name" class="form-control"
+                       ng-model="editedUser.name" required/>
+                <p class="help-block" ng-show="form.name.$error.required">name is required</p>
+                <p class="help-block" ng-show="form.name.$error.minlength">name must be at least 3 characters</p>
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error': !(form.email.$valid)}">
+            <label for="name" class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-10">
+                <input placeholder="name" id="email" type="email" name="email" class="form-control"
+                       ng-model="editedUser.email" pattern=".+@.+\....?" required/>
+                <p class="help-block" ng-show="form.email.$error.required">email is required</p>
+                <p class="help-block" ng-show="form.email.$error.email">Not valid e-mail</p>
+            </div>
+        </div>
+
+
+        <div ng-if="create || isProfileEdit" class="form-group" ng-class="{'has-error': !(form.password.$valid)}">
+            <label for="name" class="col-sm-2 control-label">Password</label>
+            <div class="col-sm-10">
+                <input placeholder="" id="password" type="password" ng-minlength="3" name="password" class="form-control"
+                       ng-model="editedUser.password" ng-required="create" />
+                <p class="help-block" ng-show="form.password.$error.required">password is required</p>
+                <p class="help-block" ng-show="form.password.$error.minlength">name must be at least 3 characters</p>
+            </div>
+        </div>
+
+        <div ng-if="!isProfileEdit" class="form-group" ng-class="{'has-error': !(form.experienceLevel.$valid)}">
+            <label for="experienceLevel" class="col-sm-2 control-label">Experience Level</label>
+            <div class="col-sm-10">
+                <input placeholder="Experience Level" id="experienceLevel" type="number" name="experienceLevel" class="form-control"
+                       ng-model="editedUser.experienceLevel" min="1" required/>
+                <p class="help-block" ng-show="form.experienceLevel.$error.number">Is not number</p>
+            </div>
+        </div>
+
+        <div ng-if="!isProfileEdit" class="form-group" ng-class="{'has-error': !(form.manager.$valid)}">
+            <label for="manager" class="col-sm-2 control-label">Manager</label>
+            <div class="col-sm-10">
+                <input id="manager" type="checkbox" name="manager" class="form-control"
+                       ng-model="editedUser.manager"/>
+            </div>
+        </div>
+
+
+        <div class="form-group" ng-class="{'has-error': !(form.birthDate.$valid)}">
+            <label for="birthDate" class="col-sm-2 control-label">Birth date</label>
+
+            <div class="col-sm-10">
+                <input id="birthDate" type="date" name="birthDate" max="{{date}}" class="form-control"
+                       ng-model="editedUser.birthDate" required/>
+                <p class="help-block" ng-show="form.birthDate.$error.date">Is not date</p>
+            </div>
+        </div>
+
+        <!-- show disabled button if form is not valid -->
+        <button ng-if="edit" ng-disabled="!form.$valid" class="btn btn-primary" type="submit" ng-click="submitEdit()">
+            <span ng-if="!isProfileEdit">Edit user</span>
+            <span ng-if="isProfileEdit">Save</span>
+        </button>
+        <button ng-if="create" ng-disabled="!form.$valid" class="btn btn-primary" type="submit" ng-click="submitCreate()">Create user
+        </button>
+        <button ng-if="!isProfileEdit" class="btn btn-danger" type="button" ng-click="cancelEdit()">Cancel
+        </button>
+    </form>
+</div>

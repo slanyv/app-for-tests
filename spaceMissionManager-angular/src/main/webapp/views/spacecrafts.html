@@ -1,0 +1,109 @@
+<h1>Spacecrafts</h1>
+<div ng-if="!edit && !create">
+    <button id="1233" class="btn btn-primary" onclick="createSpacecraft()" style="margin-bottom: 2.5rem;"><span class="glyphicon glyphicon-plus"></span>
+        New spacecraft
+    </button>
+    <b></b>
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Craft Components</th>
+            <th></th>
+            <th></th>
+
+        </tr>
+        </thead>
+        <tr ng-repeat="spacecraft in spacecrafts" ng-click="setSelected(spacecraft.id)"
+            ng-class="{active: spacecraft.id === selectedSpacecraft.id}">
+            <td>{{spacecraft.name}}</td>
+            <td>{{spacecraft.type}}</td>
+            <td>
+                {{spacecraft.components.length}}
+            </td>
+            <td>
+                <button class="btn btn-primary" ng-click="editSpacecraft(spacecraft.id)"><span
+                        class="glyphicon glyphicon-edit"></span>
+                </button>
+            </td>
+            <td>
+                <button ng-click="deleteSpacecraft(spacecraft.id)" class="btn btn-danger"><span
+                        class="glyphicon glyphicon-remove"></span></button>
+            </td>
+        </tr>
+    </table>
+
+
+    <div ng-if="selectedSpacecraft != null">
+
+        <h2>Craft components for {{selectedSpacecraft.name}}</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Ready to use</th>
+                <th>Ready date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="cc in selectedSpacecraft.components track by $index">
+                <td>{{cc.id}}</td>
+                <td>{{cc.name}}</td>
+                <td>{{cc.readyToUse?"YES":"NO"}}</td>
+                <td>{{cc.readyDate == null ? (cc.readyToUse? "READY" : "UNKNOWN") : cc.readyDate}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div ng-if="edit || create">
+    <h2 ng-if="edit">Edit spacecraft {{spacecraft.name}}</h2>
+    <h2 ng-if="create">Create spacecraft</h2>
+
+    <form name="form" novalidate class="form-horizontal" (submit)="edit?submitEdit():submitCreate()">
+        <div class="form-group" ng-class="{'has-error': !(form.name.$valid)}">
+            <label for="name" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+                <input placeholder="name" id="name" type="text" ng-minlength="3" name="name" class="form-control"
+                       ng-model="editedSpacecraft.name" required/>
+                <p class="help-block" ng-show="form.name.$error.required">name is required</p>
+                <p class="help-block" ng-show="form.name.$error.minlength">name must be at least 3 characters</p>
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error': !(form.name.$valid)}">
+            <label for="type" class="col-sm-2 control-label">Type</label>
+            <div class="col-sm-10">
+                <input placeholder="type" id="type" type="text" ng-minlength="3" name="type" class="form-control"
+                       ng-model="editedSpacecraft.type" required/>
+                <p class="help-block" ng-show="form.type.$error.required">type is required</p>
+                <p class="help-block" ng-show="form.type.$error.minlength">type must be at least 3 characters</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="craftComponents" class="col-sm-2 control-label">craftComponents</label>
+            <div class="col-sm-10">
+                <select multiple id="craftComponents" name="craftComponents" class="form-control"
+                        ng-min=1 ng-model="editedSpacecraft.components"
+                        ng-options="c.name for c in availableAndSelectedCC"
+                required="editedSpacecraft.components > 0">
+                    <option ng-repeat="craftComponent in availableAndSelectedCC" value="{{craftComponent}}">{{craftComponent}}</option>
+                </select>
+                <p class="help-block" ng-show="form.craftComponents.$error.required">At least 1 CraftComponents has to be selected</p>
+            </div>
+        </div>
+
+
+        <!-- show disabled button if form is not valid -->
+        <button ng-if="edit" ng-disabled="!form.$valid" class="btn btn-primary" type="submit" ng-click="submitEdit()">Edit spacecraft
+        </button>
+        <button ng-if="create" ng-disabled="!form.$valid" class="btn btn-primary" type="submit" ng-click="submitCreate()">Create spacecraft
+        </button>
+        <button class="btn btn-danger" type="button" ng-click="cancelEdit()">Cancel
+        </button>
+    </form>
+</div>
